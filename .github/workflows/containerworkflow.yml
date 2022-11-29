@@ -19,6 +19,10 @@ jobs:
         # checkout the repo
         - name: 'Checkout GitHub Action'
           uses: actions/checkout@master
+        - name: Bump version and push tag
+          uses: hennejg/github-tag-action@v4.1.jh1
+          with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
           
         - name: Process version of the tag
           id: version
