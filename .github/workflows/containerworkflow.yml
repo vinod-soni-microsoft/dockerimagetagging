@@ -5,6 +5,10 @@ on:
 env:
   ACR_LOGON_SERVER: ${{ secrets.ACR_NAME }}.azurecr.io
   IMAGE_NAME: ${{ secrets.ACR_NAME }}.azurecr.io/webapp:${{ github.sha }}
+  #IMAGE_NAME: ${{ secrets.ACR_NAME }}.azurecr.io/webapp:$(date +%Y%m%d).$BUILD_NUMBER => (20221128.1, 20221128.2, 20221128.3)
+  #IMAGE_NAME: ${{ secrets.ACR_NAME }}.azurecr.io/webapp:$(date +%Y%m%d).$BUILD_NUMBER-$(env.PROD.ENV_NAME) => (20221128.1-PROD, 20221128.2-DEV, 20221128.3-STAGING)
+  
+  
 
 jobs:
     build-deploy-image:
@@ -15,6 +19,18 @@ jobs:
         # checkout the repo
         - name: 'Checkout GitHub Action'
           uses: actions/checkout@master
+          
+        - name: Process version of the tag
+          id: version
+          uses: ncipollo/semantic-version-action@v1
+        - name: Dump steps context
+          env:
+            STEPS_CONTEXT: ${{ toJson(steps.version.outputs) }}
+          run: echo "$STEPS_CONTEXT"
+        - name: Dump previous tag
+          env:
+            PREVIOUS_TAG: ${{ steps.version.outputs.previous_tag }}
+          run: echo "$PREVIOUS_TAG"
           
         - name: 'Build and push image'
           uses: azure/docker-login@v1
