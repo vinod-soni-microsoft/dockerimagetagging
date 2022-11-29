@@ -7,9 +7,9 @@ env:
   IMAGE_NAME: ${{ secrets.ACR_NAME }}.azurecr.io/webapp:${{ github.sha }}
   #IMAGE_NAME: ${{ secrets.ACR_NAME }}.azurecr.io/webapp:$(date +%Y%m%d).$BUILD_NUMBER => (20221128.1, 20221128.2, 20221128.3)
   #IMAGE_NAME: ${{ secrets.ACR_NAME }}.azurecr.io/webapp:$(date +%Y%m%d).$BUILD_NUMBER-$(env.PROD.ENV_NAME) => (20221128.1-PROD, 20221128.2-DEV, 20221128.3-STAGING)
-  IMAGE_NAME1: ${{ secrets.RANDOM_NAME1 }}
-  IMAGE_NAME2: ${{ secrets.RANDOM_NAME2 }}
-  IMAGE_NAME3: ${{ secrets.RANDOM_NAME3 }}
+  IMAGE_NAME1: ${{ secrets.ACR_NAME }}.azurecr.io/webapp:${{ secrets.RANDOM_NAME1 }}
+  IMAGE_NAME2: ${{ secrets.ACR_NAME }}.azurecr.io/webapp:${{ secrets.RANDOM_NAME2 }}
+  IMAGE_NAME3: ${{ secrets.ACR_NAME }}.azurecr.io/webapp:${{ secrets.RANDOM_NAME3 }}
   
 
 jobs:
