@@ -39,13 +39,13 @@ jobs:
         - name: Autoincrement a new patch version
           run: |
             echo "NEW_PATCH_VERSION=$((${{ env.PATCH_VERSION }}+1))" >> $GITHUB_ENV
-        - name: Update patch version
-          uses: hmanzur/actions-set-secret@v2.0.0
-          with:
-            name: 'PATCH_VERSION'
-            value: ${{ env.NEW_PATCH_VERSION }}
-            repository: ${{ github.repository }}
-            token: ${{ secrets.GITHUB_TOKEN }}
+        #- name: Update patch version
+        #  uses: hmanzur/actions-set-secret@v2.0.0
+        #  with:
+        #    name: 'PATCH_VERSION'
+        #    value: ${{ env.NEW_PATCH_VERSION }}
+        #    repository: ${{ github.repository }}
+        #    token: ${{ secrets.GITHUB_TOKEN }}
 
         #- run: docker build . -t ${{ env.IMAGE_NAME }}
         #- run: docker push ${{ env.IMAGE_NAME }}
