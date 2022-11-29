@@ -32,7 +32,7 @@ jobs:
             push: true
             tags: |
              ${{ env.IMAGE_NAME }}
-            file: dockerdeploydemo/Dockerfile
+            file: dockerimagetagging/Dockerfile
             context: ./
     
     deploy-to-aks:
