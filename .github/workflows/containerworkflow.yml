@@ -11,6 +11,29 @@ env:
   IMAGE_NAME2: ${{ secrets.ACR_NAME }}.azurecr.io/webapp:${{ secrets.RANDOM_NAME2 }}
   IMAGE_NAME3: ${{ secrets.ACR_NAME }}.azurecr.io/webapp:${{ secrets.RANDOM_NAME3 }}
   
+  #Benefits -
+  
+    #It allows us to deploy the same tag on different environments with a run task.
+    #It helps us keep track when an image was created and what build it belongs to.
+    #Through the build number, we can find the commit information and map all together as needed, nice for trobleshooting.
+    #It allows us to use the same docker repo per project.
+    #It is nice to know when we created the image from the tag itself.
+    #If there's a bug in an environment with certain tag, we pull such tag, build and trobleshoot and reproduce the issue under 
+    #that condition. If we find an issue, we have the build number in the tag 20171612.1 so we know the build no. 1 has the issue. 
+    #We check our CI/CD service and that tells us what commit is the most current. We check out that commit hash from git and 
+    #debug and fix the issue.
+    
+  #Stable Tagging Drawback & Advantage -
+  
+    #There's two schools of thought, stable tagging, where you update a single tag, and unique tagging. 
+    #Each have their pros and cons. Stable tags can create instability when deploying to self healing clusters as a 
+    #new node might pull a new version, while the rest of the cluster is running a slightly older version. 
+    #Unique tagging is a best practice for deployment. However, to manage base image updates of OS & Framework patching, 
+    #you'll want to build upon stable tags in your dockerfile, and enable automatic container builds. For a more detailed 
+    #walk through, with visuals, 
+    #here's a post: https://blogs.msdn.microsoft.com/stevelasker/2018/03/01/
+    #docker-tagging-best-practices-for-tagging-and-versioning-docker-images/
+  
 
 jobs:
     build-deploy-image:
