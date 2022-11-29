@@ -5,7 +5,37 @@ on:
 env:
   ACR_LOGON_SERVER: ${{ secrets.ACR_NAME }}.azurecr.io
   IMAGE_NAME: ${{ secrets.ACR_NAME }}.azurecr.io/webapp:${{ github.sha }}
-
+  #IMAGE_NAME: ${{ secrets.ACR_NAME }}.azurecr.io/webapp:$(date +%Y%m%d).$BUILD_NUMBER => (20221128.1, 20221128.2, 20221128.3)
+  #IMAGE_NAME: ${{ secrets.ACR_NAME }}.azurecr.io/webapp:$(date +%Y%m%d).$BUILD_NUMBER-$(env.PROD.ENV_NAME) => (20221128.1-PROD, 20221128.2-DEV, 20221128.3-STAGING)
+  IMAGE_NAME1: ${{ secrets.ACR_NAME }}.azurecr.io/webapp:${{ secrets.RANDOM_NAME1 }}
+  IMAGE_NAME2: ${{ secrets.ACR_NAME }}.azurecr.io/webapp:${{ secrets.RANDOM_NAME2 }}
+  IMAGE_NAME3: ${{ secrets.ACR_NAME }}.azurecr.io/webapp:${{ secrets.RANDOM_NAME3 }}
+  IMAGE_NAME4: ${{ secrets.ACR_NAME }}.azurecr.io/webapp:latest
+  
+  
+    #Stable Tagging Drawback & Advantage -
+  
+    #There's two schools of thought, stable tagging, where you update a single tag, and unique tagging. 
+    #Each have their pros and cons. Stable tags can create instability when deploying to self healing clusters as a 
+    #new node might pull a new version, while the rest of the cluster is running a slightly older version. 
+    #Unique tagging is a best practice for deployment. However, to manage base image updates of OS & Framework patching, 
+    #you'll want to build upon stable tags in your dockerfile, and enable automatic container builds. For a more detailed 
+    #walk through, with visuals, 
+    #here's a post: https://blogs.msdn.microsoft.com/stevelasker/2018/03/01/
+    #docker-tagging-best-practices-for-tagging-and-versioning-docker-images/
+    
+  #Unique tagging benefits -
+  
+    #It allows us to deploy the same tag on different environments with a run task.
+    #It helps us keep track when an image was created and what build it belongs to.
+    #Through the build number, we can find the commit information and map all together as needed, nice for trobleshooting.
+    #It allows us to use the same docker repo per project.
+    #It is nice to know when we created the image from the tag itself.
+    #If there's a bug in an environment with certain tag, we pull such tag, build and trobleshoot and reproduce the issue under 
+    #that condition. If we find an issue, we have the build number in the tag 20171612.1 so we know the build no. 1 has the issue. 
+    #We check our CI/CD service and that tells us what commit is the most current. We check out that commit hash from git and 
+    #debug and fix the issue.
+    
 jobs:
     build-deploy-image:
         
@@ -14,7 +44,8 @@ jobs:
         steps:
         # checkout the repo
         - name: 'Checkout GitHub Action'
-          uses: actions/checkout@master
+          uses: actions/checkout@main
+       
           
         - name: 'Build and push image'
           uses: azure/docker-login@v1
@@ -22,6 +53,26 @@ jobs:
             login-server: ${{ env.ACR_LOGON_SERVER }}
             username: ${{ secrets.SERVICE_PRINCIPAL_ID }}
             password: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
+            
+          # Semantic version R&D  
+        - name: Get lowercase repository name
+          run: |
+            echo "IMAGE=${REPOSITORY,,}">>${GITHUB_ENV}
+          env:
+            REPOSITORY: ${{ env.REGISTRY }}/${{ github.repository }}
+             echo ${{ env.IMAGE }}:${{ secrets.MAJOR }}.${{ secrets.MINOR }}
+             
+        - name: Autoincrement a new patch version
+          run: |
+            echo "NEW_PATCH_VERSION=$((${{ env.PATCH_VERSION }}+1))" >> $GITHUB_ENV
+        #- name: Update patch version
+        #  uses: hmanzur/actions-set-secret@v2.0.0
+        #  with:
+        #    name: 'PATCH_VERSION'
+        #    value: ${{ env.NEW_PATCH_VERSION }}
+        #    repository: ${{ github.repository }}
+        #    token: ${{ secrets.GITHUB_TOKEN }}
+        #  ------------------------------------------------------
 
         #- run: docker build . -t ${{ env.IMAGE_NAME }}
         #- run: docker push ${{ env.IMAGE_NAME }}
@@ -31,7 +82,7 @@ jobs:
           with:
             push: true
             tags: |
-             ${{ env.IMAGE_NAME }}
+             ${{ env.IMAGE_NAME4 }}
             file: dockerimagetagging/Dockerfile
             context: ./
     
@@ -39,9 +90,10 @@ jobs:
       
       runs-on: ubuntu-latest
       
-      if: github.ref == 'refs/heads/master'
+      if: github.ref == 'refs/heads/main'
 
       needs: build-deploy-image
+      environment: PROD
           
       #env:
         #NAMESPACE: dummy
@@ -77,7 +129,7 @@ jobs:
             dockerimagetagging/manifests/deployment.yml
             dockerimagetagging/manifests/service.yml
           images: |
-            ${{ env.IMAGE_NAME }}
+            ${{ env.IMAGE_NAME4 }}
           imagepullsecrets: |
             ${{ secrets.AKS_SECRET }}
           #namespace: ${{ env.NAMESPACE }}
