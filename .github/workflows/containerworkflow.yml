@@ -10,6 +10,7 @@ env:
   IMAGE_NAME1: ${{ secrets.ACR_NAME }}.azurecr.io/webapp:${{ secrets.RANDOM_NAME1 }}
   IMAGE_NAME2: ${{ secrets.ACR_NAME }}.azurecr.io/webapp:${{ secrets.RANDOM_NAME2 }}
   IMAGE_NAME3: ${{ secrets.ACR_NAME }}.azurecr.io/webapp:${{ secrets.RANDOM_NAME3 }}
+  IMAGE_NAME4: ${{ secrets.ACR_NAME }}.azurecr.io/webapp:latest
   
   
     #Stable Tagging Drawback & Advantage -
@@ -81,7 +82,7 @@ jobs:
           with:
             push: true
             tags: |
-             ${{ env.IMAGE_NAME3 }}
+             ${{ env.IMAGE_NAME4 }}
             file: dockerimagetagging/Dockerfile
             context: ./
     
@@ -128,7 +129,7 @@ jobs:
             dockerimagetagging/manifests/deployment.yml
             dockerimagetagging/manifests/service.yml
           images: |
-            ${{ env.IMAGE_NAME3 }}
+            ${{ env.IMAGE_NAME4 }}
           imagepullsecrets: |
             ${{ secrets.AKS_SECRET }}
           #namespace: ${{ env.NAMESPACE }}
