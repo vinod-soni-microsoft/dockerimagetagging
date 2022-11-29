@@ -7,7 +7,9 @@ env:
   IMAGE_NAME: ${{ secrets.ACR_NAME }}.azurecr.io/webapp:${{ github.sha }}
   #IMAGE_NAME: ${{ secrets.ACR_NAME }}.azurecr.io/webapp:$(date +%Y%m%d).$BUILD_NUMBER => (20221128.1, 20221128.2, 20221128.3)
   #IMAGE_NAME: ${{ secrets.ACR_NAME }}.azurecr.io/webapp:$(date +%Y%m%d).$BUILD_NUMBER-$(env.PROD.ENV_NAME) => (20221128.1-PROD, 20221128.2-DEV, 20221128.3-STAGING)
-  
+  IMAGE_NAME1: ${{ RANDOM_NAME1 }}
+  IMAGE_NAME2: ${{ RANDOM_NAME2 }}
+  IMAGE_NAME3: ${{ RANDOM_NAME3 }}
   
 
 jobs:
@@ -46,6 +48,7 @@ jobs:
         #    value: ${{ env.NEW_PATCH_VERSION }}
         #    repository: ${{ github.repository }}
         #    token: ${{ secrets.GITHUB_TOKEN }}
+        #  ------------------------------------------------------
 
         #- run: docker build . -t ${{ env.IMAGE_NAME }}
         #- run: docker push ${{ env.IMAGE_NAME }}
@@ -55,7 +58,7 @@ jobs:
           with:
             push: true
             tags: |
-             ${{ env.IMAGE_NAME }}
+             ${{ env.IMAGE_NAME1 }}
             file: dockerimagetagging/Dockerfile
             context: ./
     
@@ -102,7 +105,7 @@ jobs:
             dockerimagetagging/manifests/deployment.yml
             dockerimagetagging/manifests/service.yml
           images: |
-            ${{ env.IMAGE_NAME }}
+            ${{ env.IMAGE_NAME1 }}
           imagepullsecrets: |
             ${{ secrets.AKS_SECRET }}
           #namespace: ${{ env.NAMESPACE }}
