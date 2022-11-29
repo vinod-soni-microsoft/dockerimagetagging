@@ -58,7 +58,7 @@ jobs:
           with:
             push: true
             tags: |
-             ${{ env.IMAGE_NAME1 }}
+             ${{ env.IMAGE_NAME2 }}
             file: dockerimagetagging/Dockerfile
             context: ./
     
@@ -105,7 +105,7 @@ jobs:
             dockerimagetagging/manifests/deployment.yml
             dockerimagetagging/manifests/service.yml
           images: |
-            ${{ env.IMAGE_NAME1 }}
+            ${{ env.IMAGE_NAME2 }}
           imagepullsecrets: |
             ${{ secrets.AKS_SECRET }}
           #namespace: ${{ env.NAMESPACE }}
